@@ -14,6 +14,7 @@ export default function SpiderVisitor() {
   const controls = useAnimationControls();
   const [pullY, setPullY] = useState(0);
   const [pulling, setPulling] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
   const startY = useRef(null);
   const pullingRef = useRef(false);
 
@@ -83,17 +84,17 @@ export default function SpiderVisitor() {
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
       aria-hidden="true"
     >
-      {/* the silk thread — a twisted zigzag strand, not a straight line */}
+      {/* the silk thread — several fine twisted fibers, like real spun silk */}
       <motion.div
         initial={{ height: 0 }}
         animate={controls}
-        style={{ transformOrigin: "top center", width: 14 }}
+        style={{ transformOrigin: "top center", width: 20 }}
         className="relative mx-auto overflow-visible"
       >
         <motion.svg
-          width="14"
+          width="20"
           height="100%"
-          viewBox="0 0 14 100"
+          viewBox="0 0 20 100"
           preserveAspectRatio="none"
           className="absolute inset-0"
           animate={{
@@ -101,50 +102,46 @@ export default function SpiderVisitor() {
           }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <path
-            d="M7,0 Q11,6 7,12 Q3,18 7,24 Q11,30 7,36 Q3,42 7,48 Q11,54 7,60 Q3,66 7,72 Q11,78 7,84 Q3,90 7,96 L7,100"
-            fill="none"
-            stroke="var(--color-web)"
-            strokeWidth="1"
-            strokeLinecap="round"
-            opacity="0.5"
-          />
+          {[
+            { cx: 10, amp: 4, w: 1, o: 0.55 },
+            { cx: 7, amp: 2.5, w: 0.6, o: 0.35 },
+            { cx: 13, amp: 2.5, w: 0.6, o: 0.35 },
+          ].map((f, i) => (
+            <path
+              key={i}
+              d={`M${f.cx},0 Q${f.cx + f.amp},6 ${f.cx},12 Q${f.cx - f.amp},18 ${f.cx},24 Q${f.cx + f.amp},30 ${f.cx},36 Q${f.cx - f.amp},42 ${f.cx},48 Q${f.cx + f.amp},54 ${f.cx},60 Q${f.cx - f.amp},66 ${f.cx},72 Q${f.cx + f.amp},78 ${f.cx},84 Q${f.cx - f.amp},90 ${f.cx},96 L${f.cx},100`}
+              fill="none"
+              stroke="var(--color-web)"
+              strokeWidth={f.w}
+              strokeLinecap="round"
+              opacity={f.o}
+            />
+          ))}
         </motion.svg>
       </motion.div>
 
       {/* the spider, hanging at the end of the thread */}
-      <motion.svg
-        width="26"
-        height="22"
-        viewBox="0 0 26 22"
-        className="-mt-px"
-        style={{ transformOrigin: "top center" }}
-        animate={{ rotate: [0, 6, -6, 4, -4, 0], x: [0, 2, -2, 1, 0] }}
-        transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <ellipse cx="13" cy="14" rx="5" ry="6" fill="var(--color-ink-soft)" stroke="var(--color-web)" strokeWidth="0.6" />
-        <circle cx="13" cy="6" r="3" fill="var(--color-ink-soft)" stroke="var(--color-web)" strokeWidth="0.6" />
-        {[-8, -4, 4, 8].map((dx, i) => (
-          <path
-            key={`l-${i}`}
-            d={`M9,${12 + i} Q${9 + dx / 2},${14 + i} ${4 + dx},${18 + i}`}
-            stroke="var(--color-web)"
-            strokeWidth="0.6"
-            fill="none"
-          />
-        ))}
-        {[8, 4, -4, -8].map((dx, i) => (
-          <path
-            key={`r-${i}`}
-            d={`M17,${12 + i} Q${17 + dx / 2},${14 + i} ${22 + dx},${18 + i}`}
-            stroke="var(--color-web)"
-            strokeWidth="0.6"
-            fill="none"
-          />
-        ))}
-        <circle cx="11.5" cy="5.5" r="0.7" fill="var(--color-crimson-glow)" />
-        <circle cx="14.5" cy="5.5" r="0.7" fill="var(--color-crimson-glow)" />
-      </motion.svg>
+      {imgFailed ? (
+        <motion.div
+          className="-mt-1 select-none text-2xl leading-none"
+          style={{ transformOrigin: "top center" }}
+          animate={{ rotate: [0, 6, -6, 4, -4, 0], x: [0, 2, -2, 1, 0] }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🕷️
+        </motion.div>
+      ) : (
+        <motion.img
+          src="/assets/spider.png"
+          alt=""
+          width={42}
+          onError={() => setImgFailed(true)}
+          className="-mt-1 select-none"
+          style={{ transformOrigin: "top center" }}
+          animate={{ rotate: [0, 6, -6, 4, -4, 0], x: [0, 2, -2, 1, 0] }}
+          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
     </motion.div>
   );
 }
