@@ -1,0 +1,85 @@
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+
+const links = [
+  { to: "/", label: "Home" },
+  { to: "/work", label: "Work" },
+  { to: "/contact", label: "Contact" },
+];
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-ink/70 backdrop-blur-md">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        <NavLink to="/" className="font-display text-2xl tracking-wide text-web">
+          ZAUDIN<span className="text-crimson">.</span>
+        </NavLink>
+
+        <nav className="hidden gap-8 md:flex">
+          {links.map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              end={l.to === "/"}
+              className={({ isActive }) =>
+                `font-mono text-sm uppercase tracking-widest transition-colors ${
+                  isActive ? "text-crimson" : "text-muted hover:text-web"
+                }`
+              }
+            >
+              {l.label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <button
+          className="text-web md:hidden"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {open ? (
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+            ) : (
+              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden border-t border-line/60 md:hidden"
+          >
+            <div className="flex flex-col gap-1 px-5 py-4">
+              {links.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  end={l.to === "/"}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    `border-b border-line/40 py-3 font-mono text-sm uppercase tracking-widest ${
+                      isActive ? "text-crimson" : "text-muted"
+                    }`
+                  }
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}

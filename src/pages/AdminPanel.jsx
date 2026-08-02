@@ -1,0 +1,350 @@
+import { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import {
+  addWorkItem,
+  updateWorkItem,
+  deleteWorkItem,
+  saveSettings,
+  DEFAULT_SETTINGS,
+} from "../lib/data";
+
+const emptyForm = { title: "", description: "", link: "", image: "", category: "project" };
+
+export default function AdminPanel({ settings, work }) {
+  const [form, setForm] = useState(emptyForm);
+  const [editingId, setEditingId] = useState(null);
+  const [settingsForm, setSettingsForm] = useState(settings || DEFAULT_SETTINGS);
+  const [savedMsg, setSavedMsg] = useState("");
+
+  useEffect(() => {
+    setSettingsForm(settings || DEFAULT_SETTINGS);
+  }, [settings]);
+
+  async function handleWorkSubmit(e) {
+    e.preventDefault();
+    if (editingId) {
+      await updateWorkItem(editingId, form);
+      setEditingId(null);
+    } else {
+      await addWorkItem(form);
+    }
+    setForm(emptyForm);
+  }
+
+  function startEdit(item) {
+    setEditingId(item.id);
+    setForm({
+      title: item.title || "",
+      description: item.description || "",
+      link: item.link || "",
+      image: item.image || "",
+      category: item.category || "project",
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function handleDelete(id) {
+    if (confirm("Delete this item?")) {
+      await deleteWorkItem(id);
+    }
+  }
+
+  async function handleSettingsSubmit(e) {
+    e.preventDefault();
+    await saveSettings({
+      ...settingsForm,
+      heroTagline: settingsForm.heroTagline
+        .toString()
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      yearsExperience: Number(settingsForm.yearsExperience) || 0,
+    });
+    setSavedMsg("Saved!");
+    setTimeout(() => setSavedMsg(""), 2500);
+  }
+
+  const inputClass =
+    "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson w-full";
+
+  return (
+    <section className="mx-auto max-w-5xl px-5 py-12">
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-4xl">
+          Admin <span className="text-crimson">Dashboard</span>
+        </h1>
+        <button
+          onClick={() => signOut(auth)}
+          className="rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
+        >
+          Log out
+        </button>
+      </div>
+
+      {/* ---------------- WORK ITEMS ---------------- */}
+      <div className="mt-10 rounded-2xl border border-line bg-card p-6">
+        <h2 className="font-display text-2xl text-crimson">
+          {editingId ? "Edit item" : "Add a project or game"}
+        </h2>
+        <form onSubmit={handleWorkSubmit} className="mt-4 grid gap-3 sm:grid-cols-2">
+          <input
+            className={inputClass}
+            placeholder="Title"
+            required
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+          <select
+            className={inputClass}
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          >
+            <option value="project">Project</option>
+            <option value="game">Game</option>
+          </select>
+          <input
+            className={`${inputClass} sm:col-span-2`}
+            placeholder="Link (https://...)"
+            value={form.link}
+            onChange={(e) => setForm({ ...form, link: e.target.value })}
+          />
+          <input
+            className={`${inputClass} sm:col-span-2`}
+            placeholder="Image URL (optional — paste a link, no upload needed)"
+            value={form.image}
+            onChange={(e) => setForm({ ...form, image: e.target.value })}
+          />
+          <textarea
+            className={`${inputClass} sm:col-span-2`}
+            placeholder="Short description"
+            rows={3}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+          <div className="flex gap-3 sm:col-span-2">
+            <button
+              type="submit"
+              className="rounded-lg bg-crimson px-5 py-3 font-semibold text-ink hover:bg-crimson-glow"
+            >
+              {editingId ? "Save changes" : "Add"}
+            </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingId(null);
+                  setForm(emptyForm);
+                }}
+                className="rounded-lg border border-line px-5 py-3 text-muted hover:text-web"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      <div className="mt-6 space-y-3">
+        {work.length === 0 && <p className="text-muted">No projects or games added yet.</p>}
+        {work.map((item) => (
+          <div
+            key={item.id}
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-card p-4"
+          >
+            <div>
+              <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
+                {item.category}
+              </span>
+              <span className="font-semibold">{item.title}</span>
+              {item.link && (
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-xs text-muted hover:text-crimson"
+                >
+                  ({item.link})
+                </a>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => startEdit(item)}
+                className="rounded-lg border border-line px-3 py-1.5 text-sm hover:border-crimson hover:text-crimson"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDelete(item.id)}
+                className="rounded-lg border border-line px-3 py-1.5 text-sm text-muted hover:border-red-500 hover:text-red-400"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ---------------- SITE SETTINGS ---------------- */}
+      <div className="mt-14 rounded-2xl border border-line bg-card p-6">
+        <h2 className="font-display text-2xl text-crimson">Site Settings</h2>
+        <p className="mt-1 text-sm text-muted">
+          Everything here updates the live site instantly — no rebuild, no GitHub push.
+        </p>
+
+        <form onSubmit={handleSettingsSubmit} className="mt-5 grid gap-3 sm:grid-cols-2">
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Your name (shown in the hero)
+            <input
+              className={inputClass}
+              value={settingsForm.name || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, name: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Typing taglines (comma-separated)
+            <input
+              className={inputClass}
+              value={
+                Array.isArray(settingsForm.heroTagline)
+                  ? settingsForm.heroTagline.join(", ")
+                  : settingsForm.heroTagline || ""
+              }
+              onChange={(e) => setSettingsForm({ ...settingsForm, heroTagline: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Short line under the tagline
+            <input
+              className={inputClass}
+              value={settingsForm.heroSub || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, heroSub: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Profile photo URL
+            <input
+              className={inputClass}
+              value={settingsForm.profileImage || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, profileImage: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Cover banner URL
+            <input
+              className={inputClass}
+              value={settingsForm.coverImage || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, coverImage: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Years of experience
+            <input
+              type="number"
+              className={inputClass}
+              value={settingsForm.yearsExperience ?? 0}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, yearsExperience: e.target.value })
+              }
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Formspree URL (contact form)
+            <input
+              className={inputClass}
+              placeholder="https://formspree.io/f/xxxx"
+              value={settingsForm.formspreeUrl || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, formspreeUrl: e.target.value })}
+            />
+          </label>
+
+          <div className="web-divider sm:col-span-2 my-2" />
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Contact name
+            <input
+              className={inputClass}
+              value={settingsForm.contactName || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, contactName: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Email
+            <input
+              className={inputClass}
+              value={settingsForm.email || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, email: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Phone
+            <input
+              className={inputClass}
+              value={settingsForm.phone || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            WhatsApp number
+            <input
+              className={inputClass}
+              value={settingsForm.whatsapp || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, whatsapp: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Address
+            <input
+              className={inputClass}
+              value={settingsForm.address || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, address: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Contact page title
+            <input
+              className={inputClass}
+              value={settingsForm.contactHeroTitle || ""}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, contactHeroTitle: e.target.value })
+              }
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+            Contact page subtitle
+            <input
+              className={inputClass}
+              value={settingsForm.contactHeroSub || ""}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, contactHeroSub: e.target.value })
+              }
+            />
+          </label>
+
+          <div className="flex items-center gap-3 sm:col-span-2">
+            <button
+              type="submit"
+              className="rounded-lg bg-crimson px-5 py-3 font-semibold text-ink hover:bg-crimson-glow"
+            >
+              Save settings
+            </button>
+            {savedMsg && <span className="text-sm text-crimson">{savedMsg}</span>}
+          </div>
+        </form>
+      </div>
+    </section>
+  );
+}
