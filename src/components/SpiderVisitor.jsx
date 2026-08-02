@@ -83,21 +83,33 @@ export default function SpiderVisitor() {
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
       aria-hidden="true"
     >
-      {/* the silk thread — trembles like real taut web-silk, not a straight line */}
+      {/* the silk thread — a twisted zigzag strand, not a straight line */}
       <motion.div
         initial={{ height: 0 }}
         animate={controls}
-        style={{ transformOrigin: "top center" }}
-        className="relative"
+        style={{ transformOrigin: "top center", width: 14 }}
+        className="relative mx-auto overflow-visible"
       >
-        <motion.div
-          className="mx-auto h-full w-px bg-web/40"
+        <motion.svg
+          width="14"
+          height="100%"
+          viewBox="0 0 14 100"
+          preserveAspectRatio="none"
+          className="absolute inset-0"
           animate={{
-            skewX: [0, 3, -2, 2.5, -3, 0],
-            scaleX: [1, 1.4, 1, 1.3, 1],
+            skewX: [0, 4, -3, 3, -4, 0],
           }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-        />
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path
+            d="M7,0 Q11,6 7,12 Q3,18 7,24 Q11,30 7,36 Q3,42 7,48 Q11,54 7,60 Q3,66 7,72 Q11,78 7,84 Q3,90 7,96 L7,100"
+            fill="none"
+            stroke="var(--color-web)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            opacity="0.5"
+          />
+        </motion.svg>
       </motion.div>
 
       {/* the spider, hanging at the end of the thread */}
