@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion, useMotionValue, animate } from "framer-motion";
 
 const REST_LENGTH = 190; // how far down the margin thread hangs at rest
+const MAX_TUG = 110; // how far you can physically pull the margin string
 const PULL_THRESHOLD = 90; // px of pull-down needed at the top to trigger a "refresh"
-const PULL_MAX = 150; // how far the center thread can stretch while pulling
+const PULL_MAX_DRAG = 150; // how far the center thread stretches while your finger is still moving
+const FULL_DROP = 230; // the full, satisfying length it snaps to right before reload
 const MARGIN_LEFT = 32; // resting position — near the left margin, under the logo
+const TOP_OFFSET = 72; // starts below the navbar so it never crosses the name
 const SPIDER_SIZE = 42;
 const CX = SPIDER_SIZE / 2;
 
 // ---------- twisted-cord path generation ----------
-// Builds a smooth wavy path so the fiber itself twists along its whole
-// length, instead of being a straight line with decoration on top.
 function smoothPathFromPoints(points) {
   if (points.length < 2) return "";
   let d = `M${points[0][0].toFixed(2)},${points[0][1].toFixed(2)}`;
@@ -37,11 +38,7 @@ function wavePath(cx, amp, freqCycles, phaseDeg, height = 100, step = 4) {
   return smoothPathFromPoints(points);
 }
 
-// Two main fibers twisting around each other (opposite phase = they cross
-// repeatedly, like a real two-ply twisted cord) plus several thinner
-// strands twisting around them at a different rate, for a dense,
-// properly-twisted look along the entire length.
-function TwistedCord({ height }) {
+function TwistedCord() {
   const mainFibers = [
     { amp: 3.4, freq: 2.4, phase: 0, w: 1, o: 0.85 },
     { amp: 3.4, freq: 2.4, phase: 180, w: 1, o: 0.85 },
@@ -71,44 +68,14 @@ function TwistedCord({ height }) {
         </filter>
       </defs>
 
-      {/* soft under-glow for the two main fibers */}
       {mainFibers.map((f, i) => (
-        <path
-          key={`glow-${i}`}
-          d={wavePath(CX, f.amp, f.freq, f.phase)}
-          fill="none"
-          stroke="var(--color-web)"
-          strokeWidth={f.w * 2.2}
-          opacity={0.15}
-          filter="url(#thread-glow)"
-          strokeLinecap="round"
-        />
+        <path key={`glow-${i}`} d={wavePath(CX, f.amp, f.freq, f.phase)} fill="none" stroke="var(--color-web)" strokeWidth={f.w * 2.2} opacity={0.15} filter="url(#thread-glow)" strokeLinecap="round" />
       ))}
-
-      {/* the two main twisting fibers */}
       {mainFibers.map((f, i) => (
-        <path
-          key={`main-${i}`}
-          d={wavePath(CX, f.amp, f.freq, f.phase)}
-          fill="none"
-          stroke="var(--color-web)"
-          strokeWidth={f.w}
-          opacity={f.o}
-          strokeLinecap="round"
-        />
+        <path key={`main-${i}`} d={wavePath(CX, f.amp, f.freq, f.phase)} fill="none" stroke="var(--color-web)" strokeWidth={f.w} opacity={f.o} strokeLinecap="round" />
       ))}
-
-      {/* thinner strands twisting around them */}
       {wrapFibers.map((f, i) => (
-        <path
-          key={`wrap-${i}`}
-          d={wavePath(CX, f.amp, f.freq, f.phase)}
-          fill="none"
-          stroke="var(--color-web)"
-          strokeWidth={f.w}
-          opacity={f.o}
-          strokeLinecap="round"
-        />
+        <path key={`wrap-${i}`} d={wavePath(CX, f.amp, f.freq, f.phase)} fill="none" stroke="var(--color-web)" strokeWidth={f.w} opacity={f.o} strokeLinecap="round" />
       ))}
     </svg>
   );
@@ -129,60 +96,87 @@ function SpiderGlyph({ imgFailed, setImgFailed, className = "" }) {
   );
 }
 
-// A small spider (a real 8-legged bug, not any copyrighted character)
-// that lives near the left margin, hanging from a twisted silk cord —
-// two main fibers twisting around each other, with thinner strands
-// twisting around them too, the way real plied/spun silk looks. Thread
-// and spider are one single rigid swinging unit so they always move
-// together, never independently, and the sway is slow and gentle.
-//
-// Pull-to-refresh (touch, at the very top of the page) doesn't drag this
-// same spider across the screen — instead it fades out, and a separate
-// new spider drops down the middle on its own cord, growing with your
-// finger. Release past the threshold and the page reloads.
 export default function SpiderVisitor() {
-  const marginControls = useAnimationControls();
+  // margin spider: a motion value so it can grow in on load AND be
+  // physically tugged by the finger/mouse on top of that
+  const threadHeight = useMotionValue(0);
+  const [marginImgFailed, setMarginImgFailed] = useState(false);
+  const dragStartY = useRef(null);
+  const dragBaseHeight = useRef(REST_LENGTH);
+  const isDragging = useRef(false);
+
+  // center "pull to reload" spider
   const [pullY, setPullY] = useState(0);
   const [pulling, setPulling] = useState(false);
-  const [marginImgFailed, setMarginImgFailed] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const [pullImgFailed, setPullImgFailed] = useState(false);
-  const startY = useRef(null);
+  const pullStartY = useRef(null);
   const pullingRef = useRef(false);
 
+  // drop-in on load
   useEffect(() => {
-    marginControls.start({
-      height: REST_LENGTH,
-      transition: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
+    const controls = animate(threadHeight, REST_LENGTH, {
+      duration: 1.1,
+      ease: [0.22, 1, 0.36, 1],
     });
-  }, [marginControls]);
+    return controls.stop;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // ---- physically pulling the margin string ----
+  function onStringPointerDown(e) {
+    isDragging.current = true;
+    dragStartY.current = e.clientY;
+    dragBaseHeight.current = threadHeight.get();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  }
+  function onStringPointerMove(e) {
+    if (!isDragging.current) return;
+    const delta = e.clientY - dragStartY.current;
+    if (delta > 0) {
+      threadHeight.set(Math.min(dragBaseHeight.current + delta, REST_LENGTH + MAX_TUG));
+    }
+  }
+  function onStringPointerUp() {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    animate(threadHeight, REST_LENGTH, { type: "spring", stiffness: 300, damping: 11 });
+  }
+
+  // ---- pull-to-refresh (touch, only at the very top of the page) ----
   useEffect(() => {
     function onTouchStart(e) {
       if (window.scrollY <= 0) {
-        startY.current = e.touches[0].clientY;
+        pullStartY.current = e.touches[0].clientY;
         pullingRef.current = true;
+        setDragActive(true);
+        setPulling(true);
       }
     }
     function onTouchMove(e) {
-      if (!pullingRef.current || startY.current == null) return;
-      const delta = e.touches[0].clientY - startY.current;
+      if (!pullingRef.current || pullStartY.current == null) return;
+      const delta = e.touches[0].clientY - pullStartY.current;
       if (delta > 0 && window.scrollY <= 0) {
-        setPulling(true);
-        setPullY(Math.min(delta * 0.5, PULL_MAX));
+        setPullY(Math.min(delta * 0.5, PULL_MAX_DRAG));
       } else {
         pullingRef.current = false;
+        setDragActive(false);
         setPulling(false);
         setPullY(0);
       }
     }
     function onTouchEnd() {
-      if (pullingRef.current && pullY > PULL_THRESHOLD) {
-        window.location.reload();
-        return;
-      }
+      if (!pullingRef.current) return;
       pullingRef.current = false;
-      setPulling(false);
-      setPullY(0);
+      setDragActive(false);
+      if (pullY > PULL_THRESHOLD) {
+        // commit: snap to a full, satisfying drop length, THEN reload
+        setPullY(FULL_DROP);
+        setTimeout(() => window.location.reload(), 380);
+      } else {
+        setPullY(0);
+        setTimeout(() => setPulling(false), 280);
+      }
     }
 
     window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -197,50 +191,46 @@ export default function SpiderVisitor() {
   }, [pullY]);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-0 z-50" aria-hidden="true">
-      {/* ---- resting spider, near the left margin ---- */}
+    <div className="fixed inset-x-0 top-0 z-50" aria-hidden="true">
+      {/* ---- resting spider, near the left margin — grabbable ---- */}
       <motion.div
-        className="absolute top-0 flex flex-col items-center"
-        style={{ left: MARGIN_LEFT, width: SPIDER_SIZE }}
+        className="pointer-events-none absolute flex flex-col items-center"
+        style={{ left: MARGIN_LEFT, top: TOP_OFFSET, width: SPIDER_SIZE }}
         animate={{ opacity: pulling ? 0 : 1 }}
         transition={{ duration: 0.25 }}
       >
-        <motion.div
-          style={{ transformOrigin: "top center", width: SPIDER_SIZE }}
-          className="flex flex-col items-center"
-          animate={{ rotate: [0, 2.5, -2, 1.5, -1.5, 0] }}
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <motion.div
-            initial={{ height: 0 }}
-            animate={marginControls}
-            style={{ width: SPIDER_SIZE }}
-            className="relative overflow-visible"
-          >
-            <TwistedCord />
-          </motion.div>
-          <SpiderGlyph
-            imgFailed={marginImgFailed}
-            setImgFailed={setMarginImgFailed}
-            className="-mt-3"
-          />
+        {/* generous invisible hit-area so it's easy to grab on a phone */}
+        <div
+          className="pointer-events-auto absolute -inset-x-5 top-0 cursor-grab active:cursor-grabbing"
+          style={{ height: REST_LENGTH + MAX_TUG + 30, touchAction: "none" }}
+          onPointerDown={onStringPointerDown}
+          onPointerMove={onStringPointerMove}
+          onPointerUp={onStringPointerUp}
+          onPointerCancel={onStringPointerUp}
+        />
+        <motion.div style={{ height: threadHeight, width: SPIDER_SIZE }} className="relative overflow-visible">
+          <TwistedCord />
         </motion.div>
+        <SpiderGlyph imgFailed={marginImgFailed} setImgFailed={setMarginImgFailed} className="-mt-3" />
       </motion.div>
 
       {/* ---- pull-to-refresh spider, drops fresh in the center ---- */}
       {pulling && (
         <div
-          className="absolute top-0 left-1/2 flex flex-col items-center"
-          style={{ transform: "translateX(-50%)", width: SPIDER_SIZE }}
+          className="pointer-events-none absolute left-1/2 flex flex-col items-center"
+          style={{ transform: "translateX(-50%)", top: TOP_OFFSET, width: SPIDER_SIZE }}
         >
-          <div style={{ width: SPIDER_SIZE, height: pullY }} className="relative overflow-visible">
+          <div
+            style={{
+              width: SPIDER_SIZE,
+              height: pullY,
+              transition: dragActive ? "none" : "height 320ms cubic-bezier(0.22,1,0.36,1)",
+            }}
+            className="relative overflow-visible"
+          >
             <TwistedCord />
           </div>
-          <SpiderGlyph
-            imgFailed={pullImgFailed}
-            setImgFailed={setPullImgFailed}
-            className="-mt-3"
-          />
+          <SpiderGlyph imgFailed={pullImgFailed} setImgFailed={setPullImgFailed} className="-mt-3" />
         </div>
       )}
     </div>
