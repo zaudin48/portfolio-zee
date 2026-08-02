@@ -5,12 +5,28 @@ const REST_LENGTH = 190; // how far down the thread the spider hangs
 const PULL_THRESHOLD = 90; // px of pull-down needed at the top to trigger a "refresh"
 const MARGIN_LEFT = 32; // resting position — near the left margin, under the logo
 const SPIDER_SIZE = 42;
+const CX = SPIDER_SIZE / 2;
+
+// Build a series of small curls that spiral around the two main core
+// fibers, alternating sides going down — this is what makes it read as
+// a twisted cord instead of a plain line.
+function buildWrapCurls() {
+  const curls = [];
+  for (let y = 8; y < 96; y += 11) {
+    const dir = curls.length % 2 === 0 ? 1 : -1;
+    curls.push(
+      `M${CX - 2},${y} Q${CX + dir * 6},${y + 5.5} ${CX - 2},${y + 11}`
+    );
+  }
+  return curls;
+}
+const WRAP_CURLS = buildWrapCurls();
 
 // A small spider (a real 8-legged bug, not any copyrighted character)
-// that drops in near the left margin on a fine, glinting silk thread when
-// the page loads, idles with a gentle sway, and — if you pull down at the
-// very top of the page on a touch device, like pull-to-refresh — slides
-// to center, stretches, and reloads.
+// hanging from a twisted silk cord — two main core fibers with thin
+// strands spiraling around them, the way real spun/plied silk looks.
+// The thread and the spider are one single rigid swinging unit (same
+// transform-origin, same animation) so they always move together.
 export default function SpiderVisitor() {
   const controls = useAnimationControls();
   const [pullY, setPullY] = useState(0);
@@ -24,10 +40,6 @@ export default function SpiderVisitor() {
       await controls.start({
         height: REST_LENGTH,
         transition: { duration: 1.1, ease: [0.22, 1, 0.36, 1] },
-      });
-      controls.start({
-        rotate: [0, 6, -6, 3, -3, 0],
-        transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
       });
     }
     playDrop();
@@ -85,91 +97,75 @@ export default function SpiderVisitor() {
       transition={{ type: "spring", stiffness: 260, damping: 24 }}
       aria-hidden="true"
     >
-      {/* the silk thread — one fine glinting core fiber with tiny flyaway
-          split-ends near the tip, the way real spider silk actually frays */}
+      {/* ONE rigid swinging unit: thread + spider share this single slow
+          sway, so they always move together, never independently */}
       <motion.div
-        initial={{ height: 0 }}
-        animate={controls}
         style={{ transformOrigin: "top center", width: SPIDER_SIZE }}
-        className="relative overflow-visible"
+        className="flex flex-col items-center"
+        animate={{ rotate: [0, 2.5, -2, 1.5, -1.5, 0] }}
+        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <motion.svg
-          width={SPIDER_SIZE}
-          height="100%"
-          viewBox={`0 0 ${SPIDER_SIZE} 100`}
-          preserveAspectRatio="none"
-          className="absolute inset-0"
-          animate={{ skewX: [0, 3, -2.5, 2, -3, 0] }}
-          transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <defs>
-            <filter id="thread-glow" x="-100%" y="-20%" width="300%" height="140%">
-              <feGaussianBlur stdDeviation="0.9" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* soft under-glow */}
-          <path
-            d={`M${SPIDER_SIZE / 2},0 Q${SPIDER_SIZE / 2 + 1.5},50 ${SPIDER_SIZE / 2},100`}
-            fill="none"
-            stroke="var(--color-web)"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-            opacity="0.18"
-            filter="url(#thread-glow)"
-          />
-
-          {/* the crisp main core fiber, runs all the way down flush to the spider */}
-          <path
-            d={`M${SPIDER_SIZE / 2},0 Q${SPIDER_SIZE / 2 + 1.5},50 ${SPIDER_SIZE / 2},100`}
-            fill="none"
-            stroke="var(--color-web)"
-            strokeWidth="0.9"
-            strokeLinecap="round"
-            opacity="0.85"
-          />
-
-          {/* tiny flyaway split-end fibers, only near the very tip */}
-          {[-3.5, -1.5, 1.8, 3.2].map((dx, i) => (
-            <path
-              key={i}
-              d={`M${SPIDER_SIZE / 2},86 Q${SPIDER_SIZE / 2 + dx / 2},93 ${SPIDER_SIZE / 2 + dx},100`}
-              fill="none"
-              stroke="var(--color-web)"
-              strokeWidth="0.45"
-              strokeLinecap="round"
-              opacity="0.4"
-            />
-          ))}
-        </motion.svg>
-      </motion.div>
-
-      {/* the spider — flush against the thread tip, no gap */}
-      {imgFailed ? (
+        {/* the twisted cord — two main core fibers, thin strands curling
+            around them like real plied/spun silk */}
         <motion.div
-          className="-mt-2 select-none text-2xl leading-none"
-          style={{ transformOrigin: "top center" }}
-          animate={{ rotate: [0, 6, -6, 4, -4, 0], x: [0, 2, -2, 1, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+          initial={{ height: 0 }}
+          animate={controls}
+          style={{ width: SPIDER_SIZE }}
+          className="relative overflow-visible"
         >
-          🕷️
+          <svg
+            width={SPIDER_SIZE}
+            height="100%"
+            viewBox={`0 0 ${SPIDER_SIZE} 100`}
+            preserveAspectRatio="none"
+            className="absolute inset-0"
+          >
+            <defs>
+              <filter id="thread-glow" x="-100%" y="-20%" width="300%" height="140%">
+                <feGaussianBlur stdDeviation="0.8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {/* soft under-glow behind the two main fibers */}
+            <path d={`M${CX - 1.6},0 L${CX - 1.6},100`} stroke="var(--color-web)" strokeWidth="2.2" opacity="0.15" filter="url(#thread-glow)" strokeLinecap="round" />
+            <path d={`M${CX + 1.6},0 L${CX + 1.6},100`} stroke="var(--color-web)" strokeWidth="2.2" opacity="0.15" filter="url(#thread-glow)" strokeLinecap="round" />
+
+            {/* two main core fibers, running straight down together */}
+            <path d={`M${CX - 1.6},0 L${CX - 1.6},100`} stroke="var(--color-web)" strokeWidth="1" opacity="0.85" strokeLinecap="round" />
+            <path d={`M${CX + 1.6},0 L${CX + 1.6},100`} stroke="var(--color-web)" strokeWidth="1" opacity="0.85" strokeLinecap="round" />
+
+            {/* thin strands spiraling around the main fibers — the twist */}
+            {WRAP_CURLS.map((d, i) => (
+              <path
+                key={i}
+                d={d}
+                fill="none"
+                stroke="var(--color-web)"
+                strokeWidth="0.5"
+                strokeLinecap="round"
+                opacity="0.5"
+              />
+            ))}
+          </svg>
         </motion.div>
-      ) : (
-        <motion.img
-          src="/assets/spider.png"
-          alt=""
-          width={SPIDER_SIZE}
-          onError={() => setImgFailed(true)}
-          className="-mt-3 select-none"
-          style={{ transformOrigin: "top center" }}
-          animate={{ rotate: [0, 6, -6, 4, -4, 0], x: [0, 2, -2, 1, 0] }}
-          transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
+
+        {/* the spider — flush against the cord, part of the same rigid unit */}
+        {imgFailed ? (
+          <div className="-mt-2 select-none text-2xl leading-none">🕷️</div>
+        ) : (
+          <img
+            src="/assets/spider.png"
+            alt=""
+            width={SPIDER_SIZE}
+            onError={() => setImgFailed(true)}
+            className="-mt-3 select-none"
+          />
+        )}
+      </motion.div>
     </motion.div>
   );
 }
