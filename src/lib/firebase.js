@@ -17,7 +17,21 @@ export const firebaseConfigured = Boolean(
   firebaseConfig.apiKey && firebaseConfig.projectId
 );
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+// Never let a missing/incomplete Firebase config crash the whole site.
+// Without this, an unconfigured deploy would blank-screen instead of
+// still showing the portfolio (just with the admin panel disabled).
+let app = null;
+let db = null;
+let auth = null;
 
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+if (firebaseConfigured) {
+  try {
+    app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+  } catch (err) {
+    console.error("Firebase failed to initialize:", err);
+  }
+}
+
+export { db, auth };
