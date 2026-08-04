@@ -146,7 +146,9 @@ export default function SpiderVisitor() {
   // ---- pull-to-refresh (touch, only at the very top of the page) ----
   useEffect(() => {
     function onTouchStart(e) {
-      if (e.target.closest && e.target.closest('[data-spider-string]')) return;
+      if (e.target.closest && e.target.closest("[data-spider-string], input, textarea, button, select, a, [contenteditable]")) {
+        return;
+      }
       if (window.scrollY <= 0) {
         pullStartY.current = e.touches[0].clientY;
         pullingRef.current = true;
@@ -202,9 +204,9 @@ export default function SpiderVisitor() {
       >
         {/* generous invisible hit-area so it's easy to grab on a phone */}
         <div
-          data-spider-string="true"
           className="pointer-events-auto absolute -inset-x-5 top-0 cursor-grab active:cursor-grabbing"
           style={{ height: REST_LENGTH + MAX_TUG + 30, touchAction: "none" }}
+          data-spider-string="true"
           onPointerDown={onStringPointerDown}
           onPointerMove={onStringPointerMove}
           onPointerUp={onStringPointerUp}

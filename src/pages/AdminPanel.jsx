@@ -69,14 +69,14 @@ export default function AdminPanel({ settings, work }) {
     "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson w-full";
 
   return (
-    <section className="mx-auto max-w-5xl px-5 py-12">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-4xl">
+    <section className="mx-auto max-w-5xl px-4 py-8 sm:px-5 sm:py-12">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="font-display text-3xl sm:text-4xl">
           Admin <span className="text-crimson">Dashboard</span>
         </h1>
         <button
           onClick={() => signOut(auth)}
-          className="rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
+          className="w-fit rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
         >
           Log out
         </button>
@@ -150,9 +150,9 @@ export default function AdminPanel({ settings, work }) {
         {work.map((item) => (
           <div
             key={item.id}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-card p-4"
+            className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div>
+            <div className="min-w-0 wrap-break-word">
               <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
                 {item.category}
               </span>
@@ -162,7 +162,7 @@ export default function AdminPanel({ settings, work }) {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 text-xs text-muted hover:text-crimson"
+                  className="ml-2 break-all text-xs text-muted hover:text-crimson"
                 >
                   ({item.link})
                 </a>
