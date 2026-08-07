@@ -52,7 +52,10 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-60 border-b border-line/60 bg-ink/70 backdrop-blur-md">
+    <header
+      className="sticky top-0 z-60 border-b border-line/60 bg-ink/70 backdrop-blur-md"
+      style={{ transform: "translateZ(0)", willChange: "transform" }}
+    >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
         <div className="relative">
           <NavLink
