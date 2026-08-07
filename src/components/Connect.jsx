@@ -1,29 +1,32 @@
 export default function Connect({ settings }) {
-  if (!settings?.linkedinUrl && !settings?.instagramUrl) return null;
+  const links = [
+    settings?.linkedinUrl && { label: "LinkedIn", url: settings.linkedinUrl },
+    settings?.instagramUrl && { label: "Instagram", url: settings.instagramUrl },
+  ].filter(Boolean);
+
+  if (links.length === 0) return null;
 
   return (
-    <div className="absolute left-full top-1/2 ml-6 -translate-y-1/2 z-20 flex flex-col gap-4">
-      {settings?.linkedinUrl && (
-        <a
-          href={settings.linkedinUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex h-12 w-12 animate-float items-center justify-center rounded-full border border-crimson bg-card text-white transition-all duration-300 hover:scale-110 hover:border-white hover:bg-crimson"
-        >
-          <i className="ri-linkedin-fill text-2xl"></i>
-        </a>
-      )}
-
-      {settings?.instagramUrl && (
-        <a
-          href={settings.instagramUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex h-12 w-12 animate-float-delayed items-center justify-center rounded-full border border-crimson bg-card text-white transition-all duration-300 hover:scale-110 hover:border-white hover:bg-crimson"
-        >
-          <i className="ri-instagram-line text-2xl"></i>
-        </a>
-      )}
-    </div>
+    <section className="mx-auto max-w-6xl px-5 pb-16">
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-line bg-card px-6 py-10 text-center">
+        <h2 className="font-display text-3xl">Let's Connect</h2>
+        <p className="max-w-md text-sm text-muted">
+          Find me elsewhere on the web.
+        </p>
+        <div className="mt-2 flex flex-wrap justify-center gap-3">
+          {links.map((l) => (
+            <a
+              key={l.label}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-line px-5 py-2.5 text-sm font-semibold transition hover:border-crimson hover:text-crimson"
+            >
+              {l.label} ↗
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

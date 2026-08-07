@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Connect from "../components/Connect";
 
 const DEFAULT_COVER =
   "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1600&q=80"; // dark city skyline at night
@@ -74,7 +73,6 @@ export default function Hero({ settings }) {
           />
         </motion.div>
       </div>
-        <Connect settings={settings} />
 
       {/* TEXT */}
       <div className="mx-auto max-w-6xl px-5 pt-8 text-center sm:text-left">
