@@ -35,7 +35,7 @@ export default function Home({ settings, work }) {
       </section>
 
       <Experience settings={settings} />
-    
+      <Connect settings={settings} />
     </>
   );
 }

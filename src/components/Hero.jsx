@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Connect from "../components/Connect";
-
 
 const DEFAULT_COVER =
   "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1600&q=80"; // dark city skyline at night
@@ -61,24 +59,21 @@ export default function Hero({ settings }) {
       </div>
 
       {/* PROFILE PHOTO — overlaps the bottom of the banner */}
-    <div className="mx-auto -mt-16 flex max-w-6xl justify-center px-5 sm:-mt-20 sm:justify-start md:-mt-24">
-  <div className="relative">
-    <motion.div
-      initial={{ opacity: 0, y: -40, rotate: -8 }}
-      animate={{ opacity: 1, y: 0, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 90, damping: 11, delay: 0.15 }}
-      className="h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
-    >
-      <img
-        src={settings?.profileImage || DEFAULT_PROFILE}
-        alt="Profile"
-        className="h-full w-full object-cover"
-      />
-    </motion.div>
+      <div className="mx-auto -mt-16 flex max-w-6xl justify-center px-5 sm:-mt-20 sm:justify-start md:-mt-24">
+        <motion.div
+          initial={{ opacity: 0, y: -40, rotate: -8 }}
+          animate={{ opacity: 1, y: 0, rotate: 0 }}
+          transition={{ type: "spring", stiffness: 90, damping: 11, delay: 0.15 }}
+          className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
+        >
+          <img
+            src={settings?.profileImage || DEFAULT_PROFILE}
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
+        </motion.div>
+      </div>
 
-    <Connect settings={settings} />
-  </div>
-</div>
       {/* TEXT */}
       <div className="mx-auto max-w-6xl px-5 pt-8 text-center sm:text-left">
         <motion.h1

@@ -74,20 +74,4 @@ body {
   transform: translateY(-4px);
   border-color: var(--color-crimson);
 }
-@keyframes float {
-  0%,100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: float 3s ease-in-out infinite;
-  animation-delay: .5s;
-}
