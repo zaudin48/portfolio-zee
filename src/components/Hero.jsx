@@ -61,22 +61,24 @@ export default function Hero({ settings }) {
       </div>
 
       {/* PROFILE PHOTO — overlaps the bottom of the banner */}
-      <div className="mx-auto -mt-16 flex max-w-6xl justify-center px-5 sm:-mt-20 sm:justify-start md:-mt-24">
-        <motion.div
-          initial={{ opacity: 0, y: -40, rotate: -8 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 90, damping: 11, delay: 0.15 }}
-      className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"  className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
-        >
-          <img
-            src={settings?.profileImage || DEFAULT_PROFILE}
-            alt="Profile"
-            className="h-full w-full object-cover"
-          />
-        </motion.div>
-        <Connect settings={settings} />
-      </div>
+    <div className="mx-auto -mt-16 flex max-w-6xl justify-center px-5 sm:-mt-20 sm:justify-start md:-mt-24">
+  <div className="relative">
+    <motion.div
+      initial={{ opacity: 0, y: -40, rotate: -8 }}
+      animate={{ opacity: 1, y: 0, rotate: 0 }}
+      transition={{ type: "spring", stiffness: 90, damping: 11, delay: 0.15 }}
+      className="h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
+    >
+      <img
+        src={settings?.profileImage || DEFAULT_PROFILE}
+        alt="Profile"
+        className="h-full w-full object-cover"
+      />
+    </motion.div>
 
+    <Connect settings={settings} />
+  </div>
+</div>
       {/* TEXT */}
       <div className="mx-auto max-w-6xl px-5 pt-8 text-center sm:text-left">
         <motion.h1
