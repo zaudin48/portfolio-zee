@@ -152,7 +152,7 @@ export default function AdminPanel({ settings, work }) {
             key={item.id}
             className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div className="min-w-0 wrap-break-word">
+            <div className="min-w-0 break-words">
               <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
                 {item.category}
               </span>
@@ -265,6 +265,36 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Resume/CV URL (a PDF link — Google Drive, Dropbox, etc.)
+            <input
+              className={inputClass}
+              placeholder="https://..."
+              value={settingsForm.resumeUrl || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, resumeUrl: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            LinkedIn URL
+            <input
+              className={inputClass}
+              placeholder="https://linkedin.com/in/..."
+              value={settingsForm.linkedinUrl || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, linkedinUrl: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Instagram URL
+            <input
+              className={inputClass}
+              placeholder="https://instagram.com/..."
+              value={settingsForm.instagramUrl || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, instagramUrl: e.target.value })}
+            />
+          </label>
+
           <div className="web-divider sm:col-span-2 my-2" />
 
           <label className="flex flex-col gap-1 text-xs text-muted">
@@ -333,6 +363,81 @@ export default function AdminPanel({ settings, work }) {
               }
             />
           </label>
+
+          <div className="web-divider sm:col-span-2 my-2" />
+
+          <div className="sm:col-span-2">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-xs text-muted">Experience / CV timeline</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setSettingsForm({
+                    ...settingsForm,
+                    experienceItems: [
+                      ...(settingsForm.experienceItems || []),
+                      { role: "", org: "", period: "", description: "" },
+                    ],
+                  })
+                }
+                className="rounded-lg border border-line px-3 py-1.5 text-xs hover:border-crimson hover:text-crimson"
+              >
+                + Add entry
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(settingsForm.experienceItems || []).map((item, i) => {
+                function updateItem(field, value) {
+                  const next = [...settingsForm.experienceItems];
+                  next[i] = { ...next[i], [field]: value };
+                  setSettingsForm({ ...settingsForm, experienceItems: next });
+                }
+                function removeItem() {
+                  const next = settingsForm.experienceItems.filter((_, idx) => idx !== i);
+                  setSettingsForm({ ...settingsForm, experienceItems: next });
+                }
+                return (
+                  <div key={i} className="grid gap-2 rounded-xl border border-line p-3 sm:grid-cols-2">
+                    <input
+                      className={inputClass}
+                      placeholder="Role (e.g. Frontend Developer)"
+                      value={item.role}
+                      onChange={(e) => updateItem("role", e.target.value)}
+                    />
+                    <input
+                      className={inputClass}
+                      placeholder="Company / Org"
+                      value={item.org}
+                      onChange={(e) => updateItem("org", e.target.value)}
+                    />
+                    <input
+                      className={inputClass}
+                      placeholder="Period (e.g. 2024 — Present)"
+                      value={item.period}
+                      onChange={(e) => updateItem("period", e.target.value)}
+                    />
+                    <input
+                      className={inputClass}
+                      placeholder="Short description"
+                      value={item.description}
+                      onChange={(e) => updateItem("description", e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={removeItem}
+                      className="w-fit rounded-lg border border-line px-3 py-1.5 text-xs text-muted hover:border-red-500 hover:text-red-400 sm:col-span-2"
+                    >
+                      Remove entry
+                    </button>
+                  </div>
+                );
+              })}
+              {(settingsForm.experienceItems || []).length === 0 && (
+                <p className="text-xs text-muted">No entries yet — add your first one above.</p>
+              )}
+            </div>
+          </div>
 
           <div className="flex items-center gap-3 sm:col-span-2">
             <button

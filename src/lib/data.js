@@ -34,6 +34,10 @@ export const DEFAULT_SETTINGS = {
   contactHeroTitle: "Let's build something great",
   contactHeroSub: "Reach out to discuss projects, collabs or just say hi.",
   formspreeUrl: "",
+  resumeUrl: "",
+  linkedinUrl: "",
+  instagramUrl: "",
+  experienceItems: [], // [{ role, org, period, description }]
 };
 
 /** Live-subscribes to the work (projects + games) collection, newest first. */

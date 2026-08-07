@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 import About from "../components/About";
+import Experience from "../components/Experience";
+import Connect from "../components/Connect";
 import WorkCard from "../components/WorkCard";
 
 export default function Home({ settings, work }) {
@@ -31,6 +33,9 @@ export default function Home({ settings, work }) {
           </div>
         )}
       </section>
+
+      <Experience settings={settings} />
+      <Connect settings={settings} />
     </>
   );
 }
