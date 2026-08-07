@@ -1,10 +1,17 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-// Click anywhere empty on the site -> a quick burst of "web-shot" threads
-// fires from that point and fades. Purely decorative. Because this layer
-// sits at the very back of the stacking order (z-0, mounted first), real
-// buttons/links painted above it still receive clicks normally.
+// Click anywhere on the site -> a quick burst of "web-shot" threads fires
+// from that point and fades. Purely decorative.
+//
+// This listens on `document` rather than putting onClick on a full-screen
+// div, because a full-screen div sitting behind the page (z-0) never
+// actually receives clicks — every real element on top of it (Navbar,
+// Hero, every section) intercepts the click first, even "empty" looking
+// space, since they're siblings in the tree, not ancestors of this div.
+// A document-level listener fires on every click regardless of what was
+// actually clicked, real buttons included, and doesn't interfere with
+// their own click handlers.
 export default function WebClickBurst() {
   const [bursts, setBursts] = useState([]);
   const idRef = useRef(0);
@@ -17,8 +24,13 @@ export default function WebClickBurst() {
     }, 700);
   }, []);
 
+  useEffect(() => {
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [handleClick]);
+
   return (
-    <div onClick={handleClick} className="fixed inset-0 z-0">
+    <div className="pointer-events-none fixed inset-0 z-0">
       <AnimatePresence>
         {bursts.map((b) => (
           <svg
