@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 const links = [
@@ -8,15 +8,66 @@ const links = [
   { to: "/contact", label: "Contact" },
 ];
 
+// Tap the logo this many times, each within ADMIN_TAP_WINDOW_MS of the
+// last, to reach the admin login — the phone-friendly replacement for the
+// old "double-tap anywhere" gesture, which kept firing on ordinary scrolls.
+const ADMIN_TAP_TARGET = 7;
+const ADMIN_TAP_WINDOW_MS = 600;
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [tapHint, setTapHint] = useState("");
+  const tapCount = useRef(0);
+  const lastTapAt = useRef(0);
+  const hintTimeout = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const onAdminRoute = location.pathname.startsWith("/admin");
+
+  useEffect(() => () => clearTimeout(hintTimeout.current), []);
+
+  function handleLogoClick(e) {
+    if (onAdminRoute) return; // already inside admin — just a normal link home
+
+    const now = Date.now();
+    tapCount.current = now - lastTapAt.current > ADMIN_TAP_WINDOW_MS ? 1 : tapCount.current + 1;
+    lastTapAt.current = now;
+
+    if (tapCount.current >= ADMIN_TAP_TARGET) {
+      e.preventDefault();
+      tapCount.current = 0;
+      setTapHint("");
+      navigate("/admin/login");
+      return;
+    }
+
+    const remaining = ADMIN_TAP_TARGET - tapCount.current;
+    setTapHint(remaining <= 3 ? `${remaining} more tap${remaining === 1 ? "" : "s"}...` : "");
+
+    clearTimeout(hintTimeout.current);
+    hintTimeout.current = setTimeout(() => {
+      tapCount.current = 0;
+      setTapHint("");
+    }, ADMIN_TAP_WINDOW_MS);
+  }
 
   return (
     <header className="sticky top-0 z-60 border-b border-line/60 bg-ink/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <NavLink to="/" className="font-display text-2xl tracking-wide text-web">
-          ZAUDIN<span className="text-crimson">.</span>
-        </NavLink>
+        <div className="relative">
+          <NavLink
+            to="/"
+            onClick={handleLogoClick}
+            className="font-display text-2xl tracking-wide text-web"
+          >
+            ZAUDIN<span className="text-crimson">.</span>
+          </NavLink>
+          {tapHint && (
+            <span className="absolute -bottom-4 left-0 whitespace-nowrap font-mono text-[10px] text-muted">
+              {tapHint}
+            </span>
+          )}
+        </div>
 
         <nav className="hidden gap-8 md:flex">
           {links.map((l) => (
