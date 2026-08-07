@@ -2,7 +2,7 @@ export default function Connect({ settings }) {
   if (!settings?.linkedinUrl && !settings?.instagramUrl) return null;
 
   return (
-    <div className="absolute left-full top-1/2 ml-6 -translate-y-1/2 z-20 flex flex-col gap-4">
+    <div className="absolute -right-5 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
       {settings?.linkedinUrl && (
         <a
           href={settings.linkedinUrl}
