@@ -54,7 +54,7 @@ export default function Hero({ settings }) {
           alt=""
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/20 via-ink/60 to-ink" />
+        <div className="absolute inset-0 bg-linear-to-b from-ink/20 via-ink/60 to-ink" />
         <div className="absolute inset-0 bg-crimson/10 mix-blend-multiply" />
       </div>
 
