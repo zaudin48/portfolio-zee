@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-ink: #0a0a0d;
   --color-ink-soft: #14161c;
   --color-card: #191b22;
@@ -38,10 +38,22 @@ body {
   color: var(--color-web);
 }
 
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--color-ink); }
-::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-crimson); }
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-ink);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-crimson);
+}
 
 .font-display {
   font-family: var(--font-display);
@@ -53,7 +65,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -69,8 +84,30 @@ body {
 .spidey-glow {
   transition: box-shadow 0.35s ease, transform 0.35s ease, border-color 0.35s ease;
 }
+
 .spidey-glow:hover {
   box-shadow: 0 0 0 1px var(--color-crimson), 0 20px 60px -15px rgba(200, 32, 43, 0.45);
   transform: translateY(-4px);
   border-color: var(--color-crimson);
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 3s ease-in-out infinite;
+  animation-delay: .5s;
 }
