@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import WebBackground from "./components/WebBackground";
 import WebClickBurst from "./components/WebClickBurst";
@@ -30,6 +30,12 @@ function ProtectedAdmin({ settings, work }) {
   return <AdminPanel settings={settings} work={work} />;
 }
 
+function HomeOnlySpider() {
+  const location = useLocation();
+  if (location.pathname !== "/") return null;
+  return <SpiderVisitor />;
+}
+
 export default function App() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [work, setWork] = useState([]);
@@ -49,7 +55,7 @@ export default function App() {
       <WebBackground />
       <WebClickBurst />
       <SecretGesture />
-      <SpiderVisitor />
+      <HomeOnlySpider />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
