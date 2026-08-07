@@ -66,7 +66,7 @@ export default function Hero({ settings }) {
           initial={{ opacity: 0, y: -40, rotate: -8 }}
           animate={{ opacity: 1, y: 0, rotate: 0 }}
           transition={{ type: "spring", stiffness: 90, damping: 11, delay: 0.15 }}
-        className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
+      className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"  className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-ink bg-card shadow-[0_0_0_2px_var(--color-crimson)] sm:h-40 sm:w-40 md:h-48 md:w-48"
         >
           <img
             src={settings?.profileImage || DEFAULT_PROFILE}
