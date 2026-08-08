@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, animate } from "framer-motion";
+import { cycleTheme } from "../lib/theme";
 
 const REST_LENGTH = 190; // how far down the margin thread hangs at rest
 const MAX_TUG = 110; // how far you can physically pull the margin string
+const THEME_SWITCH_RATIO = 0.8; // pull past this fraction of MAX_TUG to swap themes
 const PULL_THRESHOLD = 90; // px of pull-down needed at the top to trigger a "refresh"
 const PULL_MAX_DRAG = 150; // how far the center thread stretches while your finger is still moving
 const FULL_DROP = 230; // the full, satisfying length it snaps to right before reload
@@ -96,7 +98,8 @@ function SpiderGlyph({ imgFailed, setImgFailed, className = "" }) {
   );
 }
 
-export default function SpiderVisitor() {
+export default function SpiderVisitor({ themes }) {
+  const [themeToast, setThemeToast] = useState(null);
   // margin spider: a motion value so it can grow in on load AND be
   // physically tugged by the finger/mouse on top of that
   const threadHeight = useMotionValue(0);
@@ -140,6 +143,12 @@ export default function SpiderVisitor() {
   function onStringPointerUp() {
     if (!isDragging.current) return;
     isDragging.current = false;
+    const pulled = threadHeight.get() - REST_LENGTH;
+    if (pulled > MAX_TUG * THEME_SWITCH_RATIO) {
+      const { theme } = cycleTheme(themes);
+      setThemeToast(theme?.name || "New theme");
+      setTimeout(() => setThemeToast(null), 1600);
+    }
     animate(threadHeight, REST_LENGTH, { type: "spring", stiffness: 300, damping: 11 });
   }
 
@@ -195,6 +204,17 @@ export default function SpiderVisitor() {
 
   return (
     <div className="fixed inset-x-0 top-0 z-50" aria-hidden="true">
+      {themeToast && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full border border-line bg-card/90 px-4 py-1.5 font-mono text-xs uppercase tracking-wide text-crimson backdrop-blur"
+          style={{ top: TOP_OFFSET + 10 }}
+        >
+          {themeToast}
+        </motion.div>
+      )}
       {/* ---- resting spider, near the left margin — grabbable ---- */}
       <motion.div
         className="pointer-events-none absolute flex flex-col items-center"

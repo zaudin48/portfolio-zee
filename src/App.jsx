@@ -17,6 +17,7 @@ import AdminPanel from "./pages/AdminPanel";
 import { firebaseConfigured } from "./lib/firebase";
 import { subscribeWork, subscribeSettings, DEFAULT_SETTINGS } from "./lib/data";
 import { useAuth } from "./lib/useAuth";
+import { applyStoredTheme } from "./lib/theme";
 
 function ProtectedAdmin({ settings, work }) {
   const { user, loading } = useAuth();
@@ -30,10 +31,10 @@ function ProtectedAdmin({ settings, work }) {
   return <AdminPanel settings={settings} work={work} />;
 }
 
-function HomeOnlySpider() {
+function HomeOnlySpider({ themes }) {
   const location = useLocation();
   if (location.pathname !== "/") return null;
-  return <SpiderVisitor />;
+  return <SpiderVisitor themes={themes} />;
 }
 
 export default function App() {
@@ -50,12 +51,16 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    applyStoredTheme(settings?.themes);
+  }, [settings?.themes]);
+
   return (
     <HashRouter>
       <WebBackground />
       <WebClickBurst />
       <SecretGesture />
-      <HomeOnlySpider />
+      <HomeOnlySpider themes={settings?.themes} />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />

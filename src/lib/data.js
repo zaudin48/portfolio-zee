@@ -38,6 +38,7 @@ export const DEFAULT_SETTINGS = {
   linkedinUrl: "",
   instagramUrl: "",
   experienceItems: [], // [{ role, org, period, description }]
+  themes: [], // [{ name, bg, card, line, accent, accentGlow, text, muted }]
 };
 
 /** Live-subscribes to the work (projects + games) collection, newest first. */

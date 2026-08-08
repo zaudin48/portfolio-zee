@@ -152,7 +152,7 @@ export default function AdminPanel({ settings, work }) {
             key={item.id}
             className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div className="min-w-0 wrap-break-word">
+            <div className="min-w-0 break-words">
               <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
                 {item.category}
               </span>
@@ -363,6 +363,99 @@ export default function AdminPanel({ settings, work }) {
               }
             />
           </label>
+
+          <div className="web-divider sm:col-span-2 my-2" />
+
+          <div className="sm:col-span-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-xs text-muted">
+                Themes (pulling the string on the homepage cycles through these)
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setSettingsForm({
+                    ...settingsForm,
+                    themes: [
+                      ...(settingsForm.themes || []),
+                      {
+                        name: "New Theme",
+                        bg: "#0a0a0d",
+                        card: "#191b22",
+                        line: "#262a34",
+                        accent: "#c8202b",
+                        accentGlow: "#ff3b44",
+                        text: "#eeece4",
+                        muted: "#8b8f9a",
+                      },
+                    ],
+                  })
+                }
+                className="rounded-lg border border-line px-3 py-1.5 text-xs hover:border-crimson hover:text-crimson"
+              >
+                + Add theme
+              </button>
+            </div>
+            <p className="mb-3 text-xs text-muted">
+              If this list is empty, the site just uses the default red/black look.
+            </p>
+
+            <div className="space-y-3">
+              {(settingsForm.themes || []).map((theme, i) => {
+                function updateTheme(field, value) {
+                  const next = [...settingsForm.themes];
+                  next[i] = { ...next[i], [field]: value };
+                  setSettingsForm({ ...settingsForm, themes: next });
+                }
+                function removeTheme() {
+                  const next = settingsForm.themes.filter((_, idx) => idx !== i);
+                  setSettingsForm({ ...settingsForm, themes: next });
+                }
+                const swatches = [
+                  ["bg", "Background"],
+                  ["card", "Card"],
+                  ["line", "Border"],
+                  ["accent", "Accent"],
+                  ["accentGlow", "Accent Glow"],
+                  ["text", "Text"],
+                  ["muted", "Muted"],
+                ];
+                return (
+                  <div key={i} className="rounded-xl border border-line p-3">
+                    <input
+                      className={`${inputClass} mb-3`}
+                      placeholder="Theme name"
+                      value={theme.name}
+                      onChange={(e) => updateTheme("name", e.target.value)}
+                    />
+                    <div className="flex flex-wrap gap-3">
+                      {swatches.map(([field, label]) => (
+                        <label key={field} className="flex flex-col items-center gap-1 text-[10px] text-muted">
+                          {label}
+                          <input
+                            type="color"
+                            value={theme[field] || "#000000"}
+                            onChange={(e) => updateTheme(field, e.target.value)}
+                            className="h-8 w-10 cursor-pointer rounded border border-line bg-transparent"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeTheme}
+                      className="mt-3 w-fit rounded-lg border border-line px-3 py-1.5 text-xs text-muted hover:border-red-500 hover:text-red-400"
+                    >
+                      Remove theme
+                    </button>
+                  </div>
+                );
+              })}
+              {(settingsForm.themes || []).length === 0 && (
+                <p className="text-xs text-muted">No custom themes yet — add your first one above.</p>
+              )}
+            </div>
+          </div>
 
           <div className="web-divider sm:col-span-2 my-2" />
 
