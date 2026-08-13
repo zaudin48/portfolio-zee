@@ -255,6 +255,71 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
+          <div className="sm:col-span-2">
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-xs text-muted">Skill percentage cards</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setSettingsForm({
+                    ...settingsForm,
+                    skills: [...(settingsForm.skills || []), { label: "", value: 80 }],
+                  })
+                }
+                className="rounded-lg border border-line px-3 py-1.5 text-xs hover:border-crimson hover:text-crimson"
+              >
+                + Add skill
+              </button>
+            </div>
+            <p className="mb-3 text-xs text-muted">
+              If this list is empty, the site shows its original default set.
+            </p>
+            <div className="space-y-2">
+              {(settingsForm.skills || []).map((skill, i) => {
+                function updateSkill(field, value) {
+                  const next = [...settingsForm.skills];
+                  next[i] = { ...next[i], [field]: value };
+                  setSettingsForm({ ...settingsForm, skills: next });
+                }
+                function removeSkill() {
+                  setSettingsForm({
+                    ...settingsForm,
+                    skills: settingsForm.skills.filter((_, idx) => idx !== i),
+                  });
+                }
+                return (
+                  <div key={i} className="flex gap-2">
+                    <input
+                      className={inputClass}
+                      placeholder="Label (e.g. Frontend)"
+                      value={skill.label}
+                      onChange={(e) => updateSkill("label", e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      className={`${inputClass} w-24 shrink-0`}
+                      placeholder="%"
+                      value={skill.value}
+                      onChange={(e) => updateSkill("value", Number(e.target.value))}
+                    />
+                    <button
+                      type="button"
+                      onClick={removeSkill}
+                      className="shrink-0 rounded-lg border border-line px-3 text-xs text-muted hover:border-red-500 hover:text-red-400"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                );
+              })}
+              {(settingsForm.skills || []).length === 0 && (
+                <p className="text-xs text-muted">No custom skills yet — add your first one above.</p>
+              )}
+            </div>
+          </div>
+
           <label className="flex flex-col gap-1 text-xs text-muted">
             Formspree URL (contact form)
             <input

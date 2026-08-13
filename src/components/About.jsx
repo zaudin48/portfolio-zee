@@ -50,7 +50,7 @@ export default function About({ settings }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="spidey-glow flex min-h-35 flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
+              className="spidey-glow flex min-h- flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
             >
               <div className="font-display text-3xl text-crimson">{s.value}%</div>
               <div className="mt-1 text-sm text-muted">{s.label}</div>
