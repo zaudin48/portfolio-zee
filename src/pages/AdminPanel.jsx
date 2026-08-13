@@ -67,6 +67,10 @@ export default function AdminPanel({ settings, work }) {
 
   const inputClass =
     "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson w-full";
+  // same visual style as inputClass, but without a hardcoded width — for
+  // inputs that live inside a flex row and need to size via flex-1 instead
+  const flexInputClass =
+    "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson";
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-8 sm:px-5 sm:py-12">
@@ -152,7 +156,7 @@ export default function AdminPanel({ settings, work }) {
             key={item.id}
             className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div className="min-w-0 wrap-break-word">
+            <div className="min-w-0 break-words">
               <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
                 {item.category}
               </span>
@@ -312,7 +316,7 @@ export default function AdminPanel({ settings, work }) {
                 return (
                   <div key={i} className="flex gap-2">
                     <input
-                      className={`${inputClass} flex-1 min-w-0`}
+                      className={`${flexInputClass} flex-1 min-w-0`}
                       placeholder="Label (e.g. Frontend)"
                       value={skill.label}
                       onChange={(e) => updateSkill("label", e.target.value)}
@@ -321,7 +325,7 @@ export default function AdminPanel({ settings, work }) {
                       type="number"
                       min="0"
                       max="100"
-                      className={`${inputClass} w-24 shrink-0`}
+                      className={`${flexInputClass} w-20 shrink-0`}
                       placeholder="%"
                       value={skill.value}
                       onChange={(e) => updateSkill("value", Number(e.target.value))}
