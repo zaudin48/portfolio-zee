@@ -255,6 +255,28 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Years-of-experience label text
+            <input
+              className={inputClass}
+              placeholder="Years of Experience"
+              value={settingsForm.yearsLabel || ""}
+              onChange={(e) => setSettingsForm({ ...settingsForm, yearsLabel: e.target.value })}
+            />
+          </label>
+
+          <label className="flex flex-col gap-1 text-xs text-muted">
+            Satisfaction badge text
+            <input
+              className={inputClass}
+              placeholder="100% Client Satisfaction"
+              value={settingsForm.satisfactionBadge || ""}
+              onChange={(e) =>
+                setSettingsForm({ ...settingsForm, satisfactionBadge: e.target.value })
+              }
+            />
+          </label>
+
           <div className="sm:col-span-2">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-xs text-muted">Skill percentage cards</span>
@@ -290,7 +312,7 @@ export default function AdminPanel({ settings, work }) {
                 return (
                   <div key={i} className="flex gap-2">
                     <input
-                      className={inputClass}
+                      className={`${inputClass} flex-1 min-w-0`}
                       placeholder="Label (e.g. Frontend)"
                       value={skill.label}
                       onChange={(e) => updateSkill("label", e.target.value)}

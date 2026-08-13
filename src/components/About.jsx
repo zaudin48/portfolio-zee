@@ -36,9 +36,9 @@ export default function About({ settings }) {
           <div className="font-display text-7xl text-crimson">
             {String(years).padStart(2, "0")}
           </div>
-          <div className="mt-1 text-lg">Years of Experience</div>
+          <div className="mt-1 text-lg">{settings?.yearsLabel || "Years of Experience"}</div>
           <div className="mt-5 w-fit rounded-lg bg-crimson/15 px-4 py-2 font-mono text-sm text-crimson">
-            100% Client Satisfaction
+            {settings?.satisfactionBadge || "100% Client Satisfaction"}
           </div>
         </motion.div>
 
@@ -50,7 +50,7 @@ export default function About({ settings }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="spidey-glow flex min-h- flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
+              className="spidey-glow flex min-h-35 flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
             >
               <div className="font-display text-3xl text-crimson">{s.value}%</div>
               <div className="mt-1 text-sm text-muted">{s.label}</div>
