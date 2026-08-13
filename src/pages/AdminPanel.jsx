@@ -152,7 +152,7 @@ export default function AdminPanel({ settings, work }) {
             key={item.id}
             className="flex flex-col gap-3 rounded-xl border border-line bg-card p-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <div className="min-w-0 break-words">
+            <div className="min-w-0 wrap-break-word">
               <span className="mr-2 rounded-full bg-crimson/15 px-2 py-0.5 font-mono text-xs uppercase text-crimson">
                 {item.category}
               </span>

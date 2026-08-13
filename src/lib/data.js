@@ -39,6 +39,7 @@ export const DEFAULT_SETTINGS = {
   instagramUrl: "",
   experienceItems: [], // [{ role, org, period, description }]
   themes: [], // [{ name, bg, card, line, accent, accentGlow, text, muted }]
+  skills: [], // [{ label, value }] — the percentage cards on the home page
 };
 
 /** Live-subscribes to the work (projects + games) collection, newest first. */

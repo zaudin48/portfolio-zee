@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const skills = [
+const DEFAULT_SKILLS = [
   { label: "Frontend", value: 98 },
   { label: "UI/UX", value: 92 },
   { label: "Event Mgmt", value: 88 },
@@ -11,6 +11,7 @@ const skills = [
 
 export default function About({ settings }) {
   const years = settings?.yearsExperience ?? 2;
+  const skills = settings?.skills?.length ? settings.skills : DEFAULT_SKILLS;
 
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
@@ -44,12 +45,12 @@ export default function About({ settings }) {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-2">
           {skills.map((s, i) => (
             <motion.div
-              key={s.label}
+              key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="spidey-glow flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
+              className="spidey-glow flex min-h-35 flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center"
             >
               <div className="font-display text-3xl text-crimson">{s.value}%</div>
               <div className="mt-1 text-sm text-muted">{s.label}</div>
