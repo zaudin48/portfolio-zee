@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
+import ImageUrlOrUpload from "../components/ImageUrlOrUpload";
 import {
   addWorkItem,
   updateWorkItem,
@@ -231,19 +232,19 @@ export default function AdminPanel({ settings, work }) {
 
           <label className="flex flex-col gap-1 text-xs text-muted">
             Profile photo URL
-            <input
-              className={inputClass}
-              value={settingsForm.profileImage || ""}
-              onChange={(e) => setSettingsForm({ ...settingsForm, profileImage: e.target.value })}
+            <ImageUrlOrUpload
+              inputClass={inputClass}
+              value={settingsForm.profileImage}
+              onChange={(url) => setSettingsForm({ ...settingsForm, profileImage: url })}
             />
           </label>
 
           <label className="flex flex-col gap-1 text-xs text-muted">
             Cover banner URL
-            <input
-              className={inputClass}
-              value={settingsForm.coverImage || ""}
-              onChange={(e) => setSettingsForm({ ...settingsForm, coverImage: e.target.value })}
+            <ImageUrlOrUpload
+              inputClass={inputClass}
+              value={settingsForm.coverImage}
+              onChange={(url) => setSettingsForm({ ...settingsForm, coverImage: url })}
             />
           </label>
 
