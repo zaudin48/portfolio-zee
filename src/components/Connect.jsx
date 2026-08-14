@@ -2,6 +2,7 @@ export default function Connect({ settings }) {
   const links = [
     settings?.linkedinUrl && { label: "LinkedIn", url: settings.linkedinUrl },
     settings?.instagramUrl && { label: "Instagram", url: settings.instagramUrl },
+    settings?.githubUrl && { label: "Github", url: settings.githubUrl },
   ].filter(Boolean);
 
   if (links.length === 0) return null;
