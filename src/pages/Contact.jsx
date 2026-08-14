@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { RiWhatsappLine } from '@remixicon/react';
 
 function waLink(phone) {
   if (!phone) return "#";
@@ -85,7 +86,7 @@ export default function Contact({ settings }) {
                 rel="noopener noreferrer"
                 className="mt-5 inline-block rounded-lg bg-crimson px-5 py-2.5 font-semibold text-ink transition hover:bg-crimson-glow"
               >
-                <RiWhatsappLine /> Open WhatsApp
+               <RiWhatsappLine size={24} /> Open WhatsApp
               </a>
             )}
           </div>
