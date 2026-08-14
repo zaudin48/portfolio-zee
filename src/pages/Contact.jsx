@@ -84,7 +84,7 @@ export default function Contact({ settings }) {
                 href={waLink(settings.whatsapp || settings.phone)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-block rounded-lg bg-crimson px-5 py-2.5 font-semibold text-ink transition hover:bg-crimson-glow"
+                className="mt-5 flex gap-2 rounded-lg bg-crimson px-5 py-2.5 font-semibold text-ink transition hover:bg-crimson-glow"
               >
                <RiWhatsappLine size={24} /> Open WhatsApp
               </a>
