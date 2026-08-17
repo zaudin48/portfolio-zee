@@ -10,7 +10,7 @@ import {
   DEFAULT_SETTINGS,
 } from "../lib/data";
 
-const emptyForm = { title: "", description: "", link: "", image: "", category: "project" };
+const emptyForm = { title: "", description: "", link: "", githubUrl: "", image: "", category: "project" };
 
 export default function AdminPanel({ settings, work }) {
   const [form, setForm] = useState(emptyForm);
@@ -39,6 +39,7 @@ export default function AdminPanel({ settings, work }) {
       title: item.title || "",
       description: item.description || "",
       link: item.link || "",
+      githubUrl: item.githubUrl || "",
       image: item.image || "",
       category: item.category || "project",
     });
@@ -113,6 +114,12 @@ export default function AdminPanel({ settings, work }) {
             placeholder="Link (https://...)"
             value={form.link}
             onChange={(e) => setForm({ ...form, link: e.target.value })}
+          />
+          <input
+            className={`${inputClass} sm:col-span-2`}
+            placeholder="GitHub repo URL (optional)"
+            value={form.githubUrl}
+            onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
           />
           <input
             className={`${inputClass} sm:col-span-2`}
@@ -394,8 +401,7 @@ export default function AdminPanel({ settings, work }) {
               value={settingsForm.githubUrl || ""}
               onChange={(e) => setSettingsForm({ ...settingsForm, githubUrl: e.target.value })}
             />
-          </label>
-
+          </label> 
           <div className="web-divider sm:col-span-2 my-2" />
 
           <label className="flex flex-col gap-1 text-xs text-muted">
