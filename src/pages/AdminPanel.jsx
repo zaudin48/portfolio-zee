@@ -402,7 +402,16 @@ export default function AdminPanel({ settings, work }) {
               onChange={(e) => setSettingsForm({ ...settingsForm, instagramUrl: e.target.value })}
             />
           </label>
-
+          <label className="flex flex-col gap-1 text-xs text-muted">
+  GitHub URL
+  <input
+    className={inputClass}
+    placeholder="https://github.com/..."
+    value={settingsForm.githubUrl || ""}
+    onChange={(e) => setSettingsForm({ ...settingsForm, githubUrl: e.target.value })}
+  />
+     </label>
+ 
           <div className="web-divider sm:col-span-2 my-2" />
 
           <label className="flex flex-col gap-1 text-xs text-muted">
