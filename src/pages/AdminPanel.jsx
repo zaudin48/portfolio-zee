@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import ImageUrlOrUpload from "../components/ImageUrlOrUpload";
@@ -80,12 +81,20 @@ export default function AdminPanel({ settings, work }) {
         <h1 className="font-display text-3xl sm:text-4xl">
           Admin <span className="text-crimson">Dashboard</span>
         </h1>
-        <button
-          onClick={() => signOut(auth)}
-          className="w-fit rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
-        >
-          Log out
-        </button>
+        <div className="flex w-fit gap-2">
+          <Link
+            to="/admin/analytics"
+            className="rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
+          >
+            Analytics
+          </Link>
+          <button
+            onClick={() => signOut(auth)}
+            className="w-fit rounded-lg border border-line px-4 py-2 text-sm text-muted hover:border-crimson hover:text-web"
+          >
+            Log out
+          </button>
+        </div>
       </div>
 
       {/* ---------------- WORK ITEMS ---------------- */}
@@ -393,15 +402,7 @@ export default function AdminPanel({ settings, work }) {
               onChange={(e) => setSettingsForm({ ...settingsForm, instagramUrl: e.target.value })}
             />
           </label>
-          <label className="flex flex-col gap-1 text-xs text-muted">
-            Github URL
-            <input
-              className={inputClass}
-              placeholder="https://github.com/..."
-              value={settingsForm.githubUrl || ""}
-              onChange={(e) => setSettingsForm({ ...settingsForm, githubUrl: e.target.value })}
-            />
-          </label> 
+
           <div className="web-divider sm:col-span-2 my-2" />
 
           <label className="flex flex-col gap-1 text-xs text-muted">

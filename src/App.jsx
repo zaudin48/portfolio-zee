@@ -13,13 +13,15 @@ import Work from "./pages/Work";
 import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import TrackVisitor from "./components/TrackVisitor";
 
 import { firebaseConfigured } from "./lib/firebase";
 import { subscribeWork, subscribeSettings, DEFAULT_SETTINGS } from "./lib/data";
 import { useAuth } from "./lib/useAuth";
 import { applyStoredTheme } from "./lib/theme";
 
-function ProtectedAdmin({ settings, work }) {
+function ProtectedAdmin({ children }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -28,7 +30,7 @@ function ProtectedAdmin({ settings, work }) {
   if (!user) {
     return <Navigate to="/admin/login" replace />;
   }
-  return <AdminPanel settings={settings} work={work} />;
+  return children;
 }
 
 function HomeOnlySpider({ themes }) {
@@ -61,6 +63,7 @@ export default function App() {
       <WebClickBurst />
       <SecretGesture />
       <HomeOnlySpider themes={settings?.themes} />
+      <TrackVisitor />
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
@@ -73,7 +76,19 @@ export default function App() {
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin"
-              element={<ProtectedAdmin settings={settings} work={work} />}
+              element={
+                <ProtectedAdmin>
+                  <AdminPanel settings={settings} work={work} />
+                </ProtectedAdmin>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedAdmin>
+                  <AdminAnalytics />
+                </ProtectedAdmin>
+              }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
