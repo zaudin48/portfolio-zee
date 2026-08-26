@@ -101,6 +101,10 @@ export default function AdminAnalytics() {
   const hourly = useMemo(() => buildHourlyBuckets(all), [all]);
   const deviceData = useMemo(() => countBy(all, "deviceType"), [all]);
   const browserData = useMemo(() => countBy(all, "browser"), [all]);
+  const brandData = useMemo(
+    () => countBy(all.filter((v) => v.deviceType === "phone" && v.brand), "brand"),
+    [all]
+  );
   const pages = useMemo(() => topPages(all), [all]);
 
   const totalVisitors = all.length;
@@ -165,9 +169,10 @@ export default function AdminAnalytics() {
       </div>
 
       {/* ---- device / browser breakdown ---- */}
-      <div className="mt-8 grid gap-6 sm:grid-cols-2">
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <PieCard title="Device Breakdown" data={deviceData} />
         <PieCard title="Browser Breakdown" data={browserData} />
+        <PieCard title="Phone Brands" data={brandData} />
       </div>
 
       {/* ---- top pages + live visitors ---- */}
@@ -190,18 +195,22 @@ export default function AdminAnalytics() {
           <div className="mt-3 space-y-3">
             {recent.length === 0 && <p className="text-sm text-muted">No visitors yet.</p>}
             {recent.map((v) => (
-              <div key={v.id} className="flex items-center justify-between text-sm">
-                <div>
+              <div key={v.id} className="flex flex-col gap-0.5 border-b border-line/50 pb-2 text-sm last:border-0">
+                <div className="flex items-center justify-between">
                   <span className="text-web">{v.deviceType || "unknown"}</span>
-                  <span className="ml-2 text-muted">
-                    {v.browser} · {v.osType}
+                  <span className="font-mono text-xs text-muted">
+                    {v.lastActive?.toDate ? v.lastActive.toDate().toLocaleString() : "—"}
                   </span>
                 </div>
-                <span className="font-mono text-xs text-muted">
-                  {v.lastActive?.toDate
-                    ? v.lastActive.toDate().toLocaleTimeString()
-                    : "—"}
-                </span>
+                <div className="text-xs text-muted">
+                  {v.browser} · {v.osType}
+                  {v.brand ? ` · ${v.brand}` : ""}
+                </div>
+                {(v.city || v.country) && (
+                  <div className="text-xs text-muted">
+                    📍 {[v.city, v.region, v.country].filter(Boolean).join(", ")}
+                  </div>
+                )}
               </div>
             ))}
           </div>

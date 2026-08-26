@@ -29,6 +29,34 @@ export function detectDevice() {
     deviceType,
     osType,
     browser,
+    brand: detectBrand(ua, osType),
     screenSize: `${window.screen.width}x${window.screen.height}`,
   };
+}
+
+// Best-effort brand/model guess. Android UAs often embed the model code
+// (e.g. "SM-G991B", "Redmi Note 11") — this is a heuristic, not exact,
+// since manufacturers don't standardize this. iOS UAs never reveal the
+// specific device model at all (Apple deliberately doesn't expose it),
+// so "iPhone" is as specific as it gets there.
+function detectBrand(ua, osType) {
+  if (osType === "iOS") return "Apple (model not exposed by iOS)";
+  if (osType !== "Android") return "";
+
+  const patterns = [
+    [/SM-[A-Z0-9]+/i, "Samsung"],
+    [/Redmi|Xiaomi|POCO|Mi\s?\d/i, "Xiaomi"],
+    [/OnePlus/i, "OnePlus"],
+    [/Pixel/i, "Google Pixel"],
+    [/Realme/i, "Realme"],
+    [/OPPO|CPH\d+/i, "Oppo"],
+    [/vivo/i, "Vivo"],
+    [/Motorola|Moto\s?[A-Z]/i, "Motorola"],
+    [/Nokia/i, "Nokia"],
+    [/HUAWEI|Honor/i, "Huawei/Honor"],
+  ];
+  for (const [pattern, brand] of patterns) {
+    if (pattern.test(ua)) return brand;
+  }
+  return "Android (brand unknown)";
 }

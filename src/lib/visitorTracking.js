@@ -19,6 +19,26 @@ import { db } from "./firebase";
 const SESSION_KEY = "zaudin-visitor-session";
 const VISITORS_COLLECTION = "visitors";
 
+// Approximate location via a free IP-geolocation lookup — no permission
+// popup involved (this is just a normal network request, not the
+// browser's GPS/geolocation API). Trade-off worth knowing: this works by
+// resolving the visitor's IP address through a third party, even though
+// we only keep the city/country it resolves to, never the IP itself.
+async function lookupApproxLocation() {
+  try {
+    const res = await fetch("https://ipwho.is/");
+    const data = await res.json();
+    if (!data || data.success === false) return null;
+    return {
+      city: data.city || "",
+      region: data.region || "",
+      country: data.country || "",
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function getOrCreateSessionId() {
   let id = window.localStorage.getItem(SESSION_KEY);
   let isNew = false;
@@ -35,6 +55,7 @@ export function getOrCreateSessionId() {
 export async function initVisitor({ sessionId, deviceInfo, referrer, email }) {
   if (!db) return;
   const ref = doc(db, VISITORS_COLLECTION, sessionId);
+  const location = await lookupApproxLocation();
   await setDoc(
     ref,
     {
@@ -43,7 +64,11 @@ export async function initVisitor({ sessionId, deviceInfo, referrer, email }) {
       deviceType: deviceInfo.deviceType,
       osType: deviceInfo.osType,
       browser: deviceInfo.browser,
+      brand: deviceInfo.brand || "",
       screenSize: deviceInfo.screenSize,
+      city: location?.city || "",
+      region: location?.region || "",
+      country: location?.country || "",
       referrer: referrer || "direct",
       pageVisits: [],
       totalTimeSpent: 0,
