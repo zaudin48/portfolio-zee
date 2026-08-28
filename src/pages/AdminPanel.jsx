@@ -69,11 +69,11 @@ export default function AdminPanel({ settings, work }) {
   }
 
   const inputClass =
-    "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson w-full";
+    "box-border w-full max-w-full rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson";
   // same visual style as inputClass, but without a hardcoded width — for
   // inputs that live inside a flex row and need to size via flex-1 instead
   const flexInputClass =
-    "rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson";
+    "box-border max-w-full rounded-lg border border-line bg-ink-soft px-4 py-3 text-sm outline-none focus:border-crimson";
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-8 sm:px-5 sm:py-12">
@@ -246,7 +246,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Profile photo URL
             <ImageUrlOrUpload
               inputClass={inputClass}
@@ -255,7 +255,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Cover banner URL
             <ImageUrlOrUpload
               inputClass={inputClass}
@@ -264,7 +264,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Years of experience
             <input
               type="number"
@@ -276,7 +276,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Years-of-experience label text
             <input
               className={inputClass}
@@ -286,7 +286,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Satisfaction badge text
             <input
               className={inputClass}
@@ -298,7 +298,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <div className="sm:col-span-2">
+          <div className="min-w-0 sm:col-span-2">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-xs text-muted">Skill percentage cards</span>
               <button
@@ -363,7 +363,7 @@ export default function AdminPanel({ settings, work }) {
             </div>
           </div>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Formspree URL (contact form)
             <input
               className={inputClass}
@@ -373,7 +373,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Resume/CV URL (a PDF link — Google Drive, Dropbox, etc.)
             <input
               className={inputClass}
@@ -383,7 +383,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             LinkedIn URL
             <input
               className={inputClass}
@@ -393,7 +393,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Instagram URL
             <input
               className={inputClass}
@@ -402,19 +402,10 @@ export default function AdminPanel({ settings, work }) {
               onChange={(e) => setSettingsForm({ ...settingsForm, instagramUrl: e.target.value })}
             />
           </label>
-          <label className="flex flex-col gap-1 text-xs text-muted">
-  GitHub URL
-  <input
-    className={inputClass}
-    placeholder="https://github.com/..."
-    value={settingsForm.githubUrl || ""}
-    onChange={(e) => setSettingsForm({ ...settingsForm, githubUrl: e.target.value })}
-  />
-     </label>
- 
+
           <div className="web-divider sm:col-span-2 my-2" />
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Contact name
             <input
               className={inputClass}
@@ -423,7 +414,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Email
             <input
               className={inputClass}
@@ -432,7 +423,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             Phone
             <input
               className={inputClass}
@@ -441,7 +432,7 @@ export default function AdminPanel({ settings, work }) {
             />
           </label>
 
-          <label className="flex flex-col gap-1 text-xs text-muted">
+          <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
             WhatsApp number
             <input
               className={inputClass}
@@ -483,7 +474,7 @@ export default function AdminPanel({ settings, work }) {
 
           <div className="web-divider sm:col-span-2 my-2" />
 
-          <div className="sm:col-span-2">
+          <div className="min-w-0 sm:col-span-2">
             <div className="mb-1 flex items-center justify-between">
               <span className="text-xs text-muted">
                 Themes (pulling the string on the homepage cycles through these)
@@ -504,6 +495,7 @@ export default function AdminPanel({ settings, work }) {
                         accentGlow: "#ff3b44",
                         text: "#eeece4",
                         muted: "#8b8f9a",
+                        backgroundStyle: "webs",
                       },
                     ],
                   })
@@ -558,6 +550,20 @@ export default function AdminPanel({ settings, work }) {
                         </label>
                       ))}
                     </div>
+
+                    <label className="mt-3 flex min-w-0 flex-col gap-1 text-xs text-muted">
+                      Background animation
+                      <select
+                        className={flexInputClass}
+                        value={theme.backgroundStyle || "webs"}
+                        onChange={(e) => updateTheme("backgroundStyle", e.target.value)}
+                      >
+                        <option value="webs">Web lines (original)</option>
+                        <option value="lightning">Lightning flashes</option>
+                        <option value="threads">Drifting orbit threads</option>
+                      </select>
+                    </label>
+
                     <button
                       type="button"
                       onClick={removeTheme}
@@ -576,7 +582,7 @@ export default function AdminPanel({ settings, work }) {
 
           <div className="web-divider sm:col-span-2 my-2" />
 
-          <div className="sm:col-span-2">
+          <div className="min-w-0 sm:col-span-2">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-xs text-muted">Experience / CV timeline</span>
               <button

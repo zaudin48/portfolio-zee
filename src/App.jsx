@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-import WebBackground from "./components/WebBackground";
+import ThemedBackground from "./components/ThemedBackground";
 import WebClickBurst from "./components/WebClickBurst";
 import SecretGesture from "./components/SecretGesture";
 import SpiderVisitor from "./components/SpiderVisitor";
@@ -59,7 +59,7 @@ export default function App() {
 
   return (
     <HashRouter>
-      <WebBackground />
+      <ThemedBackground />
       <WebClickBurst />
       <SecretGesture />
       <HomeOnlySpider themes={settings?.themes} />

@@ -43,7 +43,7 @@ export default function ImageUrlOrUpload({ value, onChange, placeholder, inputCl
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
       <input
         className={inputClass}
         placeholder={placeholder}
@@ -61,7 +61,7 @@ export default function ImageUrlOrUpload({ value, onChange, placeholder, inputCl
             disabled={uploading}
           />
         </label>
-        {error && <span className="text-xs text-red-400">{error}</span>}
+        {error && <span className="break-words text-xs text-red-400">{error}</span>}
       </div>
     </div>
   );

@@ -11,7 +11,10 @@ export const FALLBACK_THEME = {
   accentGlow: "#ff3b44",
   text: "#eeece4",
   muted: "#8b8f9a",
+  backgroundStyle: "webs",
 };
+
+const THEME_CHANGE_EVENT = "zaudin-theme-changed";
 
 // Applies a theme by setting the same CSS custom properties every
 // utility class and custom style in the site already reads from
@@ -30,6 +33,14 @@ export function applyTheme(theme) {
   root.setProperty("--color-crimson-glow", t.accentGlow);
   root.setProperty("--color-web", t.text);
   root.setProperty("--color-muted", t.muted);
+  // lets any mounted component (like the background picker) react to a
+  // theme swap no matter where it was triggered from
+  window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: t }));
+}
+
+export function onThemeChange(callback) {
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
+  return () => window.removeEventListener(THEME_CHANGE_EVENT, callback);
 }
 
 export function getStoredThemeIndex() {
